@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/schmmv/tinyapp/issues"
   },
-  "homepage": "https://github.com/schmmv/tinyapp#readme"
+  "homepage": "https://github.com/schmmv/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
