@@ -51,7 +51,11 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL; //save new shortURL-longURL key-value pair in urlDatabase
   res.redirect(`/urls/${shortURL}`);
   // console.log(req.body); // Log the POST request body to the console
-  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
+});
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
