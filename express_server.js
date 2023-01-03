@@ -6,7 +6,6 @@ function generateRandomString() {
   for (var s=''; s.length < 6; s += 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.random()*62|0));
   return s;
 }
-console.log('random key:', generateRandomString());
 
 const express = require('express');
 const app = express();
@@ -48,6 +47,8 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL; //save new shortURL-longURL key-value pair in urlDatabase
   console.log(req.body); // Log the POST request body to the console
   res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
