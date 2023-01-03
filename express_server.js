@@ -49,8 +49,9 @@ app.get('/urls/:id', (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL; //save new shortURL-longURL key-value pair in urlDatabase
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);
+  // console.log(req.body); // Log the POST request body to the console
+  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
 app.listen(PORT, () => {
