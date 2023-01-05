@@ -1,3 +1,9 @@
+
+const express = require('express');
+const app = express();
+const PORT = 8080; //default port 8080
+app.set('view engine', 'ejs'); //use EJS as templating engine
+
 /**
  * 
  * @returns a string of 6 random alphanumeric characters
@@ -7,18 +13,22 @@ function generateRandomString() {
   return s;
 }
 
-const express = require('express');
-const app = express();
-const PORT = 8080; //default port 8080
+//==================
+//MIDWARE
+//==================
+app.use(express.urlencoded({ extended: true })); //instead of receiving as query form, receive data as an object -> req.body
 
-app.set('view engine', 'ejs'); //use EJS as templating engine
-
+//==================
+//DATABASE 
+//==================
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true })); //instead of receiving as query form, receive data as an object -> req.body
+//==================
+//ROUTES 
+//==================
 
 app.get('/', (req, res) => {
   res.send("Hello!");
@@ -32,26 +42,39 @@ app.get('/hello', (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+
+/**
+ * CREATE (FORM)
+*/
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
+});
+
+/**
+ * CREATE (POST)
+*/
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+/**
+ * READ (ALL)
+ */
 app.get('/urls', (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
-app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
-});
-
+/**
+ * READ (ONE)
+ */
 app.get('/urls/:id', (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render('urls_show', templateVars);
 });
 
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL; //save new shortURL-longURL key-value pair in urlDatabase
-  res.redirect(`/urls/${shortURL}`);
-  // console.log(req.body); // Log the POST request body to the console
-});
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
