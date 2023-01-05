@@ -18,7 +18,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); //instead of receiving as query form, receive data as an object -> req.body
 
 app.get('/', (req, res) => {
   res.send("Hello!");
