@@ -50,7 +50,6 @@ app.get('/hello', (req, res) => {
 app.post('/login', (req, res) => {
   console.log(req.body);
   res.cookie('username', req.body.username);
-
   res.redirect('/urls');
 })
 /**
@@ -73,7 +72,7 @@ app.post("/urls", (req, res) => {
  * READ (ALL)
  */
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
@@ -81,7 +80,7 @@ app.get('/urls', (req, res) => {
  * READ (ONE)
  */
 app.get('/urls/:id', (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const templateVars = { username: req.cookies["username"], id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render('urls_show', templateVars);
 });
 
