@@ -78,7 +78,7 @@ app.get('/urls/:id', (req, res) => {
 /**
  * UPDATE (FORM)
  */
-app.post('/urls/:id/edit', (req, res) => {
+app.post('/urls/:id', (req, res) => {
   const newURL = req.body.newURL;
   urlDatabase[req.params.id] = newURL;
   res.redirect('/urls');
@@ -92,7 +92,7 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 })
 
-app.get('u/:id', (req, res) => {
+app.get('/u/:id', (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
