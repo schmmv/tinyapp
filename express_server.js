@@ -1,5 +1,6 @@
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
@@ -17,6 +18,7 @@ function generateRandomString() {
 //MIDWARE
 //==================
 app.use(express.urlencoded({ extended: true })); //instead of receiving as query form, receive data as an object -> req.body
+app.use(cookieParser());
 
 //==================
 //DATABASE 
@@ -42,7 +44,15 @@ app.get('/hello', (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+/**
+ * ACCEPT SIGN-IN FORM SUBMISSION
+ */
+app.post('/login', (req, res) => {
+  console.log(req.body);
+  res.cookie('username', req.body.username);
 
+  res.redirect('/urls');
+})
 /**
  * CREATE (FORM)
 */
@@ -83,6 +93,7 @@ app.post('/urls/:id', (req, res) => {
   urlDatabase[req.params.id] = newURL;
   res.redirect('/urls');
 });
+
 /**
  * DELETE
  */
@@ -91,6 +102,7 @@ app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[idToDelete];
   res.redirect('/urls');
 })
+
 
 app.get('/u/:id', (req, res) => {
   const longURL = urlDatabase[req.params.id];
