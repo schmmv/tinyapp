@@ -76,6 +76,14 @@ app.get('/urls/:id', (req, res) => {
 });
 
 /**
+ * UPDATE (FORM)
+ */
+app.post('/urls/:id/edit', (req, res) => {
+  const newURL = req.body.newURL;
+  urlDatabase[req.params.id] = newURL;
+  res.redirect('/urls');
+});
+/**
  * DELETE
  */
 app.post('/urls/:id/delete', (req, res) => {
