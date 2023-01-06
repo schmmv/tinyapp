@@ -48,8 +48,15 @@ app.get('/hello', (req, res) => {
  * ACCEPT SIGN-IN FORM SUBMISSION
  */
 app.post('/login', (req, res) => {
-  console.log(req.body);
   res.cookie('username', req.body.username);
+  res.redirect('/urls');
+})
+
+/**
+ * Handle sign-out request
+ */
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
   res.redirect('/urls');
 })
 /**
