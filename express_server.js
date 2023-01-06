@@ -56,7 +56,8 @@ app.post('/login', (req, res) => {
  * CREATE (FORM)
 */
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  const templateVars = { username: req.cookies["username"] };
+  res.render('urls_new', templateVars);
 });
 
 /**
