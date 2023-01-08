@@ -12,7 +12,7 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 //MIDWARE
 //==================
 app.use(express.urlencoded({ extended: true })); //instead of receiving data as query form, receive data as an object -> req.body
-app.use(morgan("tiny"));
+app.use(morgan("dev"));
 app.use(cookieParser());
 
 
