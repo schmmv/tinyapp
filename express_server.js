@@ -10,7 +10,7 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 //==================
 //MIDWARE
 //==================
-app.use(express.urlencoded({ extended: true })); //instead of receiving as query form, receive data as an object -> req.body
+app.use(express.urlencoded({ extended: true })); //instead of receiving data as query form, receive data as an object -> req.body
 app.use(cookieParser());
 
 //==================
@@ -103,7 +103,9 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 })
 
-
+/**
+ * Re-route to long URL upon clicking on shortURL link
+ */
 app.get('/u/:id', (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
