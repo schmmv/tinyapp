@@ -1,18 +1,11 @@
-
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const { generateRandomString } = require('./functions');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
 
-/**
- * 
- * @returns a string of 6 random alphanumeric characters
- */
-function generateRandomString() {
-  for (var s=''; s.length < 6; s += 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.random()*62|0));
-  return s;
-}
+
 
 //==================
 //MIDWARE
