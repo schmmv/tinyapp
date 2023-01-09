@@ -41,6 +41,13 @@ app.get('/hello', (req, res) => {
 });
 
 /**
+ * Show Register page
+ */
+app.get('/register', (req, res) => {
+  const loginCookie = { username: req.cookies["username"] };
+  res.render('urls_register', loginCookie);
+});
+/**
  * Sign-in form submission
  */
 app.post('/login', (req, res) => {
