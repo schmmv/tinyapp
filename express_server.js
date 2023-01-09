@@ -41,7 +41,7 @@ app.get('/hello', (req, res) => {
 });
 
 /**
- * ACCEPT SIGN-IN FORM SUBMISSION
+ * Sign-in form submission
  */
 app.post('/login', (req, res) => {
   res.cookie('username', req.body.username);
@@ -55,16 +55,17 @@ app.post('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('/urls');
 })
+
 /**
- * CREATE (FORM)
+ * Add new URL - Show form
 */
 app.get('/urls/new', (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { username: req.cookies["username"] }; //do i need to send this cookie?
   res.render('urls_new', templateVars);
 });
 
 /**
- * CREATE (POST)
+ * Post new URL
 */
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -73,7 +74,7 @@ app.post("/urls", (req, res) => {
 });
 
 /**
- * READ (ALL)
+ * Read all - index
  */
 app.get('/urls', (req, res) => {
   const templateVars = { username: req.cookies["username"], urls: urlDatabase };
@@ -81,7 +82,7 @@ app.get('/urls', (req, res) => {
 });
 
 /**
- * READ (ONE)
+ * Read one 
  */
 app.get('/urls/:id', (req, res) => {
   const templateVars = { username: req.cookies["username"], id: req.params.id, longURL: urlDatabase[req.params.id] };
@@ -89,7 +90,7 @@ app.get('/urls/:id', (req, res) => {
 });
 
 /**
- * UPDATE (FORM)
+ * Update a URL - submit form
  */
 app.post('/urls/:id', (req, res) => {
   const newURL = req.body.newURL;
@@ -98,7 +99,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 /**
- * DELETE
+ * Delete a URL
  */
 app.post('/urls/:id/delete', (req, res) => {
   const idToDelete = req.params.id;
