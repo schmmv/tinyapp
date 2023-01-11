@@ -68,14 +68,12 @@ app.get('/register', (req, res) => {
   //Get user data from cookie
   const userID = req.cookies.userID;
 
-  //Set user object for rendering _header.ejs partial
-  const templateVars = { user: users[userID] }; 
-
   //If user is already logged in, redirect to /urls
   if (userID) {
     return res.redirect('/urls');
   }
-
+  //Set user object for rendering _header.ejs partial
+  const templateVars = { user: users[userID] }; 
   res.render('urls_register', templateVars);
 });
 
@@ -115,14 +113,12 @@ app.get('/login', (req, res) => {
   //Get user data from cookie
   const userID = req.cookies.userID;
 
-  //Send user object for rendering _header.ejs partial
-  const templateVars = { user: users[userID] };
-
   //If user is already logged in, redirect to /urls
   if (userID) {
     return res.redirect('/urls');
   }
-  
+  //Send user object for rendering _header.ejs partial
+  const templateVars = { user: users[userID] };
   res.render('urls_login', templateVars);
 });
 
@@ -160,7 +156,14 @@ app.post('/logout', (req, res) => {
  * Get Add new URL page
 */
 app.get('/urls/new', (req, res) => {
-  const templateVars = { user: users[req.cookies.userID] }; 
+  const userID = req.cookies.userID;
+
+  //If user is not logged in, redirect to login
+  if (!userID) {
+    return res.redirect('/login');
+  }
+
+  const templateVars = { user: users[userID] }; 
   res.render('urls_new', templateVars);
 });
 
@@ -168,6 +171,13 @@ app.get('/urls/new', (req, res) => {
  * Post new URL
 */
 app.post("/urls", (req, res) => {
+  const userID = req.cookies.userID;
+
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send("Unauthorized. Please login to continue\n");
+  }
+
   const shortURL = generateRandomString();
 
   //Add user input longURL to urlDatabase
