@@ -74,31 +74,35 @@ app.get('/register', (req, res) => {
  */
 app.post('/register', (req, res) => {
   const id = generateRandomString();
+
+  //Store user data from form input
   const { email, password } = req.body;
 
+  //Check if email and/or password fields are missing
   if (!email || !password) {
     return res.status(400).send('Please enter missing information');
   }
+  //Check if user already exists
   if (foundUserByEmail(email, users)) {
     return res.status(400).send('User with this email already exists');
   }
-
+  //Add new user to database
   users[id] = {
     id,
     email,
     password
   };
-
+  //Set cookie with userID value
   res.cookie('userID', id);
+  //Redirect user to urls page
   res.redirect('/urls');
-
 });
 
 /**
  * Get Login page
  */
 app.get('/login', (req, res) => {
-  const templateVars = { user: users[req.cookies.userID] };
+  const templateVars = { user: users[req.cookies.userID] }; //Get user data from cookie for rendering _header.ejs partial, if available
   res.render('urls_login', templateVars);
 });
 
@@ -106,17 +110,19 @@ app.get('/login', (req, res) => {
  * Handle login form submission
  */
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
 
-  if (!foundUserByEmail(email, users)) {
+  const { email, password } = req.body;
+  const user = foundUserByEmail(email, users);
+  
+  //check if user wasn't found
+  if (!user) {
     return res.status(403).send('This account does not exist');
   }
-  const user = foundUserByEmail(email, users);
-
+  //check if passwords don't match
   if (user.password !== password) {
     return res.status(403).send('Failed authentication')
   }
-  
+
   res.cookie('userID', user.id);
   res.redirect('/urls');
 });
@@ -125,6 +131,7 @@ app.post('/login', (req, res) => {
  * Handle logout request
  */
 app.post('/logout', (req, res) => {
+  //Delete cookie
   res.clearCookie('userID');
   res.redirect('/login');
 })
@@ -142,6 +149,8 @@ app.get('/urls/new', (req, res) => {
 */
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
+
+  //Add user input longURL to urlDatabase
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
@@ -151,7 +160,7 @@ app.post("/urls", (req, res) => {
  */
 app.get('/urls', (req, res) => {
   const templateVars = { user: users[req.cookies.userID], urls: urlDatabase };
-  res.render('urls_index', templateVars);
+  res.render('urls_index', templateVars); //Pass cookie information and database to render template
 });
 
 /**
@@ -166,7 +175,9 @@ app.get('/urls/:id', (req, res) => {
  * Update a URL - handle form submission
  */
 app.post('/urls/:id', (req, res) => {
+  //Store user input new URL
   const newURL = req.body.newURL;
+  //Add it to the database
   urlDatabase[req.params.id] = newURL;
   res.redirect('/urls');
 });
@@ -175,6 +186,7 @@ app.post('/urls/:id', (req, res) => {
  * Delete a URL
  */
 app.post('/urls/:id/delete', (req, res) => {
+  //Identify data related to delete button press
   const idToDelete = req.params.id;
   delete urlDatabase[idToDelete];
   res.redirect('/urls');
@@ -188,7 +200,7 @@ app.get('/u/:id', (req, res) => {
   res.redirect(longURL);
 });
 
-
+//Start up the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
