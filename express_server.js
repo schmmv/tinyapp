@@ -1,23 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const { generateRandomString } = require('./functions');
+const { generateRandomString, foundUserByEmail } = require('./functions');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
-
-/**
- * @returns user object if found, null if not found
- */
-const foundUserByEmail = function(email) {
-  for (const userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
-    }
-  }
-  return null;
-};
-
 
 //==================
 //MIDWARE
@@ -28,8 +15,9 @@ app.use(cookieParser());
 
 
 //==================
-//DATABASE 
+//DATABASES
 //==================
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -52,20 +40,29 @@ const users = {
 //ROUTES 
 //==================
 
+/**
+ * Get root page
+ */
 app.get('/', (req, res) => {
   res.send("Hello!");
 });
 
+/**
+ * Get JSON string of url database
+ */
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
+/**
+ * Get /hello page
+ */
 app.get('/hello', (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 /**
- * Show Register page
+ * Get Register page
  */
 app.get('/register', (req, res) => {
   const templateVars = { user: users[req.cookies.userID] }; //required to render the header partial which is in urls_register
@@ -98,7 +95,7 @@ app.post('/register', (req, res) => {
 });
 
 /**
- * Get /login page
+ * Get Login page
  */
 app.get('/login', (req, res) => {
   const templateVars = { user: users[req.cookies.userID] };
@@ -106,14 +103,16 @@ app.get('/login', (req, res) => {
 });
 
 /**
- * Login form submission
+ * Handle login form submission
  */
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
+
   if (!foundUserByEmail(email)) {
     return res.status(403).send('This account does not exist');
   }
   const user = foundUserByEmail(email);
+
   if (user.password !== password) {
     return res.status(403).send('Failed authentication')
   }
@@ -123,7 +122,7 @@ app.post('/login', (req, res) => {
 });
 
 /**
- * Handle sign-out request
+ * Handle logout request
  */
 app.post('/logout', (req, res) => {
   res.clearCookie('userID');
@@ -131,7 +130,7 @@ app.post('/logout', (req, res) => {
 })
 
 /**
- * Add new URL - Show form
+ * Get Add new URL page
 */
 app.get('/urls/new', (req, res) => {
   const templateVars = { user: users[req.cookies.userID] }; 
@@ -148,7 +147,7 @@ app.post("/urls", (req, res) => {
 });
 
 /**
- * Read all - index
+ * Get all urls page (index)
  */
 app.get('/urls', (req, res) => {
   const templateVars = { user: users[req.cookies.userID], urls: urlDatabase };
@@ -156,7 +155,7 @@ app.get('/urls', (req, res) => {
 });
 
 /**
- * Read one 
+ * Get one url details page
  */
 app.get('/urls/:id', (req, res) => {
   const templateVars = { user: users[req.cookies.userID], id: req.params.id, longURL: urlDatabase[req.params.id] };
@@ -164,7 +163,7 @@ app.get('/urls/:id', (req, res) => {
 });
 
 /**
- * Update a URL - submit form
+ * Update a URL - handle form submission
  */
 app.post('/urls/:id', (req, res) => {
   const newURL = req.body.newURL;
@@ -182,12 +181,13 @@ app.post('/urls/:id/delete', (req, res) => {
 })
 
 /**
- * Re-route to long URL upon clicking on shortURL link
+ * Get actual web page (long URL) from shortURL link
  */
 app.get('/u/:id', (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
