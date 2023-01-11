@@ -24,6 +24,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 //==================
 //ROUTES 
 //==================
@@ -44,9 +57,27 @@ app.get('/hello', (req, res) => {
  * Show Register page
  */
 app.get('/register', (req, res) => {
-  const loginCookie = { username: req.cookies["username"] };
-  res.render('urls_register', loginCookie);
+  const templateVars = { user: req.cookies.username }; //required to render the header partial which is in urls_register
+  res.render('urls_register', templateVars);
 });
+
+/**
+ * Handle registration form data
+ */
+app.post('/register', (req, res) => {
+  const id = generateRandomString();
+  const { email, password } = req.body;
+  users[id] = {
+    id,
+    email,
+    password
+  };
+
+  console.log(users);
+  res.cookie('user_id', id);
+  res.redirect('/urls');
+
+})
 /**
  * Sign-in form submission
  */
@@ -67,7 +98,7 @@ app.post('/logout', (req, res) => {
  * Add new URL - Show form
 */
 app.get('/urls/new', (req, res) => {
-  const templateVars = { username: req.cookies["username"] }; //do i need to send this cookie?
+  const templateVars = { username: req.cookies["username"] }; 
   res.render('urls_new', templateVars);
 });
 
