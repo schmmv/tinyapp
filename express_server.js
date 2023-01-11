@@ -106,12 +106,21 @@ app.get('/login', (req, res) => {
 });
 
 /**
- * Sign-in form submission
+ * Login form submission
  */
 app.post('/login', (req, res) => {
-  res.cookie('userID', req.body); //need to update this
+  const { email, password } = req.body;
+  if (!foundUserByEmail(email)) {
+    return res.status(403).send('This account does not exist');
+  }
+  const user = foundUserByEmail(email);
+  if (user.password !== password) {
+    return res.status(403).send('Failed authentication')
+  }
+  
+  res.cookie('userID', user.id);
   res.redirect('/urls');
-})
+});
 
 /**
  * Handle sign-out request
