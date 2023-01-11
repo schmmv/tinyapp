@@ -226,7 +226,16 @@ app.post('/urls/:id/delete', (req, res) => {
  * Get actual web page (long URL) from shortURL link
  */
 app.get('/u/:id', (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  const shortURL = req.params.id;
+
+  //Get longURL of shortURL from database
+  const longURL = urlDatabase[shortURL];
+  
+  //Check if shortURL doesnt' exist
+  if (!longURL) {
+    return res.status(404).send(`${shortURL} does not exist`);
+  }
+
   res.redirect(longURL);
 });
 
