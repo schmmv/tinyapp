@@ -6,6 +6,17 @@ const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
 
+/**
+ * @returns user object if found, null if not found
+ */
+const foundUser = function(email) {
+  for (const userId in users) {
+    if (users[userId].email === email) {
+      return users[userId];
+    }
+  }
+  return null;
+}
 
 
 //==================
@@ -67,13 +78,19 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).send('Please enter missing information');
+  }
   users[id] = {
     id,
     email,
     password
   };
 
-  console.log(users);
+  if (foundUser(email)) {
+    return res.status(400).send('User with this email already exists');
+  }
   res.cookie('userID', id);
   res.redirect('/urls');
 
