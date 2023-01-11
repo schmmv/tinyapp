@@ -65,7 +65,17 @@ app.get('/hello', (req, res) => {
  * Get Register page
  */
 app.get('/register', (req, res) => {
-  const templateVars = { user: users[req.cookies.userID] }; //required to render the header partial which is in urls_register
+  //Get user data from cookie
+  const userID = req.cookies.userID;
+
+  //Set user object for rendering _header.ejs partial
+  const templateVars = { user: users[userID] }; 
+
+  //If user is already logged in, redirect to /urls
+  if (userID) {
+    return res.redirect('/urls');
+  }
+
   res.render('urls_register', templateVars);
 });
 
@@ -102,7 +112,17 @@ app.post('/register', (req, res) => {
  * Get Login page
  */
 app.get('/login', (req, res) => {
-  const templateVars = { user: users[req.cookies.userID] }; //Get user data from cookie for rendering _header.ejs partial, if available
+  //Get user data from cookie
+  const userID = req.cookies.userID;
+
+  //Send user object for rendering _header.ejs partial
+  const templateVars = { user: users[userID] };
+
+  //If user is already logged in, redirect to /urls
+  if (userID) {
+    return res.redirect('/urls');
+  }
+  
   res.render('urls_login', templateVars);
 });
 
