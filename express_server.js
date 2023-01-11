@@ -16,7 +16,7 @@ const foundUserByEmail = function(email) {
     }
   }
   return null;
-}
+};
 
 
 //==================
@@ -82,15 +82,15 @@ app.post('/register', (req, res) => {
   if (!email || !password) {
     return res.status(400).send('Please enter missing information');
   }
+  if (foundUserByEmail(email)) {
+    return res.status(400).send('User with this email already exists');
+  }
+
   users[id] = {
     id,
     email,
     password
   };
-
-  if (foundUserByEmail(email)) {
-    return res.status(400).send('User with this email already exists');
-  }
 
   res.cookie('userID', id);
   res.redirect('/urls');
