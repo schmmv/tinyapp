@@ -79,7 +79,7 @@ app.post('/register', (req, res) => {
   if (!email || !password) {
     return res.status(400).send('Please enter missing information');
   }
-  if (foundUserByEmail(email)) {
+  if (foundUserByEmail(email, users)) {
     return res.status(400).send('User with this email already exists');
   }
 
@@ -108,10 +108,10 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (!foundUserByEmail(email)) {
+  if (!foundUserByEmail(email, users)) {
     return res.status(403).send('This account does not exist');
   }
-  const user = foundUserByEmail(email);
+  const user = foundUserByEmail(email, users);
 
   if (user.password !== password) {
     return res.status(403).send('Failed authentication')

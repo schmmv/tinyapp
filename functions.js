@@ -9,10 +9,10 @@ const generateRandomString = function() {
 /**
  * @returns user object if found, null if not found
  */
-const foundUserByEmail = function(email) {
-  for (const userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
+const foundUserByEmail = function(email, database) {
+  for (const id in database) {
+    if (database[id].email === email) {
+      return database[id];
     }
   }
   return null;
