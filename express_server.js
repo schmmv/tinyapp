@@ -9,7 +9,7 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 /**
  * @returns user object if found, null if not found
  */
-const foundUser = function(email) {
+const foundUserByEmail = function(email) {
   for (const userId in users) {
     if (users[userId].email === email) {
       return users[userId];
@@ -88,13 +88,23 @@ app.post('/register', (req, res) => {
     password
   };
 
-  if (foundUser(email)) {
+  if (foundUserByEmail(email)) {
     return res.status(400).send('User with this email already exists');
   }
+
   res.cookie('userID', id);
   res.redirect('/urls');
 
-})
+});
+
+/**
+ * Get /login page
+ */
+app.get('/login', (req, res) => {
+  const templateVars = { user: users[req.cookies.userID] };
+  res.render('urls_login', templateVars);
+});
+
 /**
  * Sign-in form submission
  */
