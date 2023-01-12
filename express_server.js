@@ -69,7 +69,7 @@ app.get('/urls.json', (req, res) => {
  * Get /hello page
  */
 app.get('/hello', (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  res.send("<html><body>Hello <b>World</b></body></html>");
 });
 
 /**
@@ -186,7 +186,7 @@ app.post("/urls", (req, res) => {
 
   //Check if user is not logged in
   if (!userID) {
-    return res.status(401).send("Unauthorized. Please login to continue\n");
+    return res.status(401).send('Unauthorized. Please login to continue');
   }
 
   const shortURL = generateRandomString();
@@ -204,7 +204,7 @@ app.get('/urls', (req, res) => {
   const userID = req.cookies.userID;
   //Check if user is not logged in
   if (!userID) {
-    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n");
+    return res.status(401).send('<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>');
   }
   //Filter out user's urls only
   const urls = urlsForUser(userID, urlDatabase);
@@ -220,13 +220,13 @@ app.get('/urls/:id', (req, res) => {
   
   //Check if user is not logged in
   if (!userID) {
-    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n");
+    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
   }
   const shortURL = req.params.id;
 
   //Check if url doesn't belong to the user logged in 
   if (urlDatabase[shortURL].userID !== userID) {
-    return res.status(401).send("You are unauthorized to view this URL");
+    return res.status(401).send('You are unauthorized to view this URL');
   }
   const templateVars = { user: users[userID], id: shortURL, longURL: urlDatabase[shortURL].longURL };
   res.render('urls_show', templateVars);
@@ -236,13 +236,26 @@ app.get('/urls/:id', (req, res) => {
  * Edit a URL - handle form submission
  */
 app.post('/urls/:id', (req, res) => {
+  const shortURL = req.params.id;
+  //Check if shortURL doesn't exist before updating
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send('This URL does not exist');
+  }
   //Get user connected to URL edit
   const userID = req.cookies.userID;
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
+  }
+  //Check if user does not own the URL
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(401).send('You are unauthorized to view this URL');
+  }
+
   //Store new URL
   const newURL = req.body.newURL;
-  //Add it to the database
-  urlDatabase[req.params.id] = { longURL: newURL, userID };
-  // console.log('new database: ', urlDatabase);
+  //Add it to database
+  urlDatabase[shortURL] = { longURL: newURL, userID };
   res.redirect('/urls');
 });
 
@@ -250,9 +263,23 @@ app.post('/urls/:id', (req, res) => {
  * Delete a URL
  */
 app.post('/urls/:id/delete', (req, res) => {
+  const shortURL = req.params.id;
+  //Check if shortURL doesn't exist before updating
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send('This URL does not exist');
+  }
+  //Get user connected to URL edit
+  const userID = req.cookies.userID;
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
+  }
+  //Check if user does not own the URL
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(401).send('You are unauthorized to view this URL');
+  }
   //Identify data related to delete button press
-  const idToDelete = req.params.id;
-  delete urlDatabase[idToDelete];
+  delete urlDatabase[shortURL];
   res.redirect('/urls');
 })
 
