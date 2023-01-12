@@ -22,7 +22,7 @@ const foundUserByEmail = function(email, database) {
  * @returns URLs associated with the id
  */
 const urlsForUser = function(id, database) {
-  const urls = database;
+  const urls = {...database }; //avoid shallow copy of database
   for (const obj in urls) {
     if (urls[obj].userID !== id) {
       delete urls[obj];
