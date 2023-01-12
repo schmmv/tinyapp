@@ -196,6 +196,11 @@ app.post("/urls", (req, res) => {
  * Get all urls page (index)
  */
 app.get('/urls', (req, res) => {
+  const userID = req.cookies.userID;
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n")
+  }
   const templateVars = { user: users[req.cookies.userID], urls: urlDatabase };
   res.render('urls_index', templateVars); //Pass cookie information and database to render template
 });
