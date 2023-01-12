@@ -19,8 +19,14 @@ app.use(cookieParser());
 //==================
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -181,7 +187,8 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
 
   //Add user input longURL to urlDatabase
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID };
+  // console.log('Updated database: ', urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -194,21 +201,25 @@ app.get('/urls', (req, res) => {
 });
 
 /**
- * Get one url details page
+ * Get one URL details page
  */
 app.get('/urls/:id', (req, res) => {
-  const templateVars = { user: users[req.cookies.userID], id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const shortURL = req.params.id;
+  const templateVars = { user: users[req.cookies.userID], id: shortURL, longURL: urlDatabase[shortURL].longURL };
   res.render('urls_show', templateVars);
 });
 
 /**
- * Update a URL - handle form submission
+ * Edit a URL - handle form submission
  */
 app.post('/urls/:id', (req, res) => {
-  //Store user input new URL
+  //Get user connected to URL edit
+  const userID = req.cookies.userID;
+  //Store new URL
   const newURL = req.body.newURL;
   //Add it to the database
-  urlDatabase[req.params.id] = newURL;
+  urlDatabase[req.params.id] = { longURL: newURL, userID };
+  // console.log('new database: ', urlDatabase);
   res.redirect('/urls');
 });
 
@@ -229,7 +240,7 @@ app.get('/u/:id', (req, res) => {
   const shortURL = req.params.id;
 
   //Get longURL of shortURL from database
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   
   //Check if shortURL doesnt' exist
   if (!longURL) {
