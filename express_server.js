@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const { generateRandomString, foundUserByEmail } = require('./functions');
+const { generateRandomString, foundUserByEmail, urlsForUser } = require('./functions');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
@@ -39,6 +39,11 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk",
+  },
+  aJ48lW: {
+    id: "aJ48lW",
+    email: "a@a.com",
+    password: "1234",
   },
 };
 
@@ -201,7 +206,9 @@ app.get('/urls', (req, res) => {
   if (!userID) {
     return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n")
   }
-  const templateVars = { user: users[req.cookies.userID], urls: urlDatabase };
+  //Filter out user's urls only
+  const urls = urlsForUser(userID, urlDatabase);
+  const templateVars = { user: users[req.cookies.userID], urls };
   res.render('urls_index', templateVars); //Pass cookie information and database to render template
 });
 

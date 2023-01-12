@@ -18,4 +18,17 @@ const foundUserByEmail = function(email, database) {
   return null;
 };
 
-module.exports = { generateRandomString, foundUserByEmail };
+/**
+ * @returns URLs associated with the id
+ */
+const urlsForUser = function(id, database) {
+  const urls = database;
+  for (const obj in urls) {
+    if (urls[obj].userID !== id) {
+      delete urls[obj];
+    }
+  }
+  return urls;
+};
+
+module.exports = { generateRandomString, foundUserByEmail, urlsForUser };
