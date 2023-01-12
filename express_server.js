@@ -204,7 +204,7 @@ app.get('/urls', (req, res) => {
   const userID = req.cookies.userID;
   //Check if user is not logged in
   if (!userID) {
-    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n")
+    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n");
   }
   //Filter out user's urls only
   const urls = urlsForUser(userID, urlDatabase);
@@ -216,8 +216,13 @@ app.get('/urls', (req, res) => {
  * Get one URL details page
  */
 app.get('/urls/:id', (req, res) => {
+  const userID = req.cookies.userID;
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n");
+  }
   const shortURL = req.params.id;
-  const templateVars = { user: users[req.cookies.userID], id: shortURL, longURL: urlDatabase[shortURL].longURL };
+  const templateVars = { user: users[userID], id: shortURL, longURL: urlDatabase[shortURL].longURL };
   res.render('urls_show', templateVars);
 });
 
