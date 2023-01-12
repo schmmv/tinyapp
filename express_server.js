@@ -217,11 +217,17 @@ app.get('/urls', (req, res) => {
  */
 app.get('/urls/:id', (req, res) => {
   const userID = req.cookies.userID;
+  
   //Check if user is not logged in
   if (!userID) {
     return res.status(401).send("<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>\n");
   }
   const shortURL = req.params.id;
+
+  //Check if url doesn't belong to the user logged in 
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(401).send("You are unauthorized to view this URL");
+  }
   const templateVars = { user: users[userID], id: shortURL, longURL: urlDatabase[shortURL].longURL };
   res.render('urls_show', templateVars);
 });
