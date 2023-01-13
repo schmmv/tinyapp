@@ -9,7 +9,7 @@ const generateRandomString = function() {
 /**
  * @returns user object if found, null if not found
  */
-const foundUserByEmail = function(email, database) {
+const getUserByEmail = function(email, database) {
   for (const id in database) {
     if (database[id].email === email) {
       return database[id];
@@ -31,4 +31,4 @@ const urlsForUser = function(id, database) {
   return urls;
 };
 
-module.exports = { generateRandomString, foundUserByEmail, urlsForUser };
+module.exports = { generateRandomString, getUserByEmail, urlsForUser };

@@ -3,7 +3,7 @@ const morgan = require('morgan');
 // const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
-const { generateRandomString, foundUserByEmail, urlsForUser } = require('./helpers');
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
@@ -110,7 +110,7 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Please enter missing information');
   }
   //Check if user already exists
-  if (foundUserByEmail(email, users)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send('User with this email already exists');
   }
   //Hash password to store in user object
@@ -151,7 +151,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
 
   const { email, password } = req.body;
-  const user = foundUserByEmail(email, users);
+  const user = getUserByEmail(email, users);
   
   //check if user wasn't found
   if (!user) {
