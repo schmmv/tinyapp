@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const { generateRandomString, foundUserByEmail, urlsForUser } = require('./functions');
 const app = express();
@@ -12,8 +13,14 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 //==================
 app.use(express.urlencoded({ extended: true })); //instead of receiving data as query form, receive data as an object -> req.body
 app.use(morgan("dev"));
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['kawefdaf', '345tqaggfd'],
 
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 //==================
 //DATABASES
@@ -78,8 +85,8 @@ app.get('/hello', (req, res) => {
  */
 app.get('/register', (req, res) => {
   //Get user data from cookie
-  const userID = req.cookies.userID;
-
+  const userID = req.session.userID;
+  
   //If user is already logged in, redirect to /urls
   if (userID) {
     return res.redirect('/urls');
@@ -116,7 +123,8 @@ app.post('/register', (req, res) => {
     password: hashedPassword,
   };
   //Set cookie with userID value
-  res.cookie('userID', id);
+  req.session.userID = id;
+  // res.cookie('userID', id);
   //Redirect user to urls page
   res.redirect('/urls');
 });
@@ -126,7 +134,7 @@ app.post('/register', (req, res) => {
  */
 app.get('/login', (req, res) => {
   //Get user data from cookie
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
 
   //If user is already logged in, redirect to /urls
   if (userID) {
@@ -154,7 +162,8 @@ app.post('/login', (req, res) => {
     return res.status(403).send('Failed authentication')
   }
 
-  res.cookie('userID', user.id);
+  // res.cookie('userID', user.id);
+  req.session.userID = user.id;
   res.redirect('/urls');
 });
 
@@ -163,8 +172,8 @@ app.post('/login', (req, res) => {
  */
 app.post('/logout', (req, res) => {
   //Delete cookie
-  console.log("users:", users);
-  res.clearCookie('userID');
+  // res.clearCookie('userID');
+  req.session = null;
   res.redirect('/login');
 })
 
@@ -172,7 +181,7 @@ app.post('/logout', (req, res) => {
  * Get Add new URL page
 */
 app.get('/urls/new', (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
 
   //If user is not logged in, redirect to login
   if (!userID) {
@@ -187,7 +196,7 @@ app.get('/urls/new', (req, res) => {
  * Post new URL
 */
 app.post("/urls", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
 
   //Check if user is not logged in
   if (!userID) {
@@ -206,14 +215,14 @@ app.post("/urls", (req, res) => {
  * Get all urls page (index)
  */
 app.get('/urls', (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   //Check if user is not logged in
   if (!userID) {
     return res.status(401).send('<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>');
   }
   //Filter out user's urls only
   const urls = urlsForUser(userID, urlDatabase);
-  const templateVars = { user: users[req.cookies.userID], urls };
+  const templateVars = { user: users[userID], urls };
   res.render('urls_index', templateVars); //Pass cookie information and database to render template
 });
 
@@ -221,7 +230,7 @@ app.get('/urls', (req, res) => {
  * Get one URL details page
  */
 app.get('/urls/:id', (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   
   //Check if user is not logged in
   if (!userID) {
@@ -247,7 +256,7 @@ app.post('/urls/:id', (req, res) => {
     return res.status(404).send('This URL does not exist');
   }
   //Get user connected to URL edit
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   //Check if user is not logged in
   if (!userID) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
@@ -274,7 +283,7 @@ app.post('/urls/:id/delete', (req, res) => {
     return res.status(404).send('This URL does not exist');
   }
   //Get user connected to URL edit
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   //Check if user is not logged in
   if (!userID) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
