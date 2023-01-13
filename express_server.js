@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const { generateRandomString, foundUserByEmail, urlsForUser } = require('./functions');
 const app = express();
 const PORT = 8080; //default port 8080
@@ -94,7 +95,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = generateRandomString();
 
-  //Store user data from form input
+  //get user data from form input
   const { email, password } = req.body;
 
   //Check if email and/or password fields are missing
@@ -105,11 +106,14 @@ app.post('/register', (req, res) => {
   if (foundUserByEmail(email, users)) {
     return res.status(400).send('User with this email already exists');
   }
+  //Hash password to store in user object
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   //Add new user to database
   users[id] = {
     id,
     email,
-    password
+    password: hashedPassword,
   };
   //Set cookie with userID value
   res.cookie('userID', id);
@@ -146,7 +150,7 @@ app.post('/login', (req, res) => {
     return res.status(403).send('This account does not exist');
   }
   //check if passwords don't match
-  if (user.password !== password) {
+  if (!bcrypt.compareSync(password, user.password)) {
     return res.status(403).send('Failed authentication')
   }
 
@@ -159,6 +163,7 @@ app.post('/login', (req, res) => {
  */
 app.post('/logout', (req, res) => {
   //Delete cookie
+  console.log("users:", users);
   res.clearCookie('userID');
   res.redirect('/login');
 })
