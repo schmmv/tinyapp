@@ -3,7 +3,7 @@ const morgan = require('morgan');
 // const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
-const { generateRandomString, foundUserByEmail, urlsForUser } = require('./functions');
+const { generateRandomString, foundUserByEmail, urlsForUser } = require('./helpers');
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
