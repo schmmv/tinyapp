@@ -63,7 +63,66 @@ const users = {
  * Get root page
  */
 app.get('/', (req, res) => {
-  res.send("Hello!");
+  //Get user data from cookie
+  const userID = req.session.userID;
+  //If no user is logged in, redirect to login page
+  if (!userID) {
+    res.redirect('/login');
+  }
+  res.redirect('/urls');
+});
+
+/**
+ * Get Login page
+ */
+app.get('/login', (req, res) => {
+  //Get user data from cookie
+  const userID = req.session.userID;
+
+  //If user is already logged in, redirect to /urls
+  if (userID) {
+    return res.redirect('/urls');
+  }
+  //Send user object for rendering _header.ejs partial
+  const templateVars = { user: users[userID] };
+  res.render('urls_login', templateVars);
+});
+
+/**
+ * Handle login form submission
+ */
+app.post('/login', (req, res) => {
+
+  const { email, password } = req.body;
+  const user = getUserByEmail(email, users);
+  
+  //check if user wasn't found
+  if (!user) {
+    return res.status(403).send('This account does not exist');
+  }
+  //check if passwords don't match
+  if (!bcrypt.compareSync(password, user.password)) {
+    return res.status(403).send('Failed authentication')
+  }
+
+  // res.cookie('userID', user.id);
+  req.session.userID = user.id;
+  res.redirect('/urls');
+});
+
+/**
+ * Get all urls page (index)
+ */
+app.get('/urls', (req, res) => {
+  const userID = req.session.userID;
+  //Check if user is not logged in
+  if (!userID) {
+    return res.status(401).send('<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>');
+  }
+  //Filter out user's urls only
+  const urls = urlsForUser(userID, urlDatabase);
+  const templateVars = { user: users[userID], urls };
+  res.render('urls_index', templateVars); //Pass cookie information and database to render template
 });
 
 /**
@@ -129,43 +188,6 @@ app.post('/register', (req, res) => {
   res.redirect('/urls');
 });
 
-/**
- * Get Login page
- */
-app.get('/login', (req, res) => {
-  //Get user data from cookie
-  const userID = req.session.userID;
-
-  //If user is already logged in, redirect to /urls
-  if (userID) {
-    return res.redirect('/urls');
-  }
-  //Send user object for rendering _header.ejs partial
-  const templateVars = { user: users[userID] };
-  res.render('urls_login', templateVars);
-});
-
-/**
- * Handle login form submission
- */
-app.post('/login', (req, res) => {
-
-  const { email, password } = req.body;
-  const user = getUserByEmail(email, users);
-  
-  //check if user wasn't found
-  if (!user) {
-    return res.status(403).send('This account does not exist');
-  }
-  //check if passwords don't match
-  if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send('Failed authentication')
-  }
-
-  // res.cookie('userID', user.id);
-  req.session.userID = user.id;
-  res.redirect('/urls');
-});
 
 /**
  * Handle logout request
@@ -211,20 +233,6 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-/**
- * Get all urls page (index)
- */
-app.get('/urls', (req, res) => {
-  const userID = req.session.userID;
-  //Check if user is not logged in
-  if (!userID) {
-    return res.status(401).send('<html><body>Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to continue</body></html>');
-  }
-  //Filter out user's urls only
-  const urls = urlsForUser(userID, urlDatabase);
-  const templateVars = { user: users[userID], urls };
-  res.render('urls_index', templateVars); //Pass cookie information and database to render template
-});
 
 /**
  * Get one URL details page
