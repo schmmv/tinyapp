@@ -15,19 +15,16 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true })); //instead of receiving data as query form, receive data as an object -> req.body
 app.use(morgan("dev"));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['kawefdaf', '345tqaggfd'],
-
   // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000 // lasts 24 hours
 }));
 
 //==================
 //DATABASES
 //==================
-
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -60,7 +57,6 @@ const users = {
 //==================
 //ROUTES
 //==================
-
 /**
  * Get root page
  */
