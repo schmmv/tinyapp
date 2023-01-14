@@ -35,7 +35,7 @@ const urlDatabase = {
     userID: "aJ48lW",
   },
 };
-//Do not use while testing, as passwords will be hashed and won't match these plain-text passwords
+//Do not use to test login, as passwords will be hashed and won't match these plain-text passwords
 const users = {
   userRandomID: {
     id: "userRandomID",
