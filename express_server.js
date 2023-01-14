@@ -20,7 +20,7 @@ app.use(cookieSession({
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 //==================
 //DATABASES
@@ -56,7 +56,7 @@ const users = {
 };
 
 //==================
-//ROUTES 
+//ROUTES
 //==================
 
 /**
@@ -102,7 +102,7 @@ app.post('/login', (req, res) => {
   }
   //check if passwords don't match
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send('Failed authentication')
+    return res.status(403).send('Failed authentication');
   }
   //Happy path. set cookie
   req.session.userID = user.id;
@@ -117,13 +117,13 @@ app.get('/urls', (req, res) => {
   const userID = req.session.userID;
   //If user is not logged in, return error message
   if (!userID) {
-    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href=\"/register\">register</a> to continue</body></html>');
+    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
   }
   //Filter out user's urls only
   const urls = urlsForUser(userID, urlDatabase);
   const templateVars = { user: users[userID], urls };
   //Pass cookie information and database to render template
-  res.render('urls_index', templateVars); 
+  res.render('urls_index', templateVars);
 });
 
 /**
@@ -150,7 +150,7 @@ app.get('/register', (req, res) => {
     return res.redirect('/urls');
   }
   //Otherwise set user object for rendering _header.ejs partial and urls_register view
-  const templateVars = { user: users[userID] }; 
+  const templateVars = { user: users[userID] };
   res.render('urls_register', templateVars);
 });
 
@@ -194,7 +194,7 @@ app.post('/logout', (req, res) => {
   req.session = null;
   //Redirect to /login
   res.redirect('/login');
-})
+});
 
 /**
  * Get Add new URL page
@@ -207,7 +207,7 @@ app.get('/urls/new', (req, res) => {
     return res.redirect('/login');
   }
   //happy path
-  const templateVars = { user: users[userID] }; 
+  const templateVars = { user: users[userID] };
   res.render('urls_new', templateVars);
 });
 
@@ -243,7 +243,7 @@ app.get('/urls/:id', (req, res) => {
   if (!userID) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
   }
-  //If user doesn't own the url, send error message 
+  //If user doesn't own the url, send error message
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(401).send('You are unauthorized to view this URL');
   }
@@ -301,7 +301,7 @@ app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[shortURL];
   //Return to /urls
   res.redirect('/urls');
-})
+});
 
 /**
  * Get actual web page (long URL) from shortURL link

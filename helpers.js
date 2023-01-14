@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * @returns a string of 6 random alphanumeric characters
  */
 const generateRandomString = function() {
