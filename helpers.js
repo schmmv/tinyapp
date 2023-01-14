@@ -3,7 +3,7 @@
  * @returns a string of 6 random alphanumeric characters
  */
 const generateRandomString = function() {
-  return Math.random().toString(16).slice(2, 8);
+  return Math.random().toString(36).slice(2, 8);
 };
 
 /**
