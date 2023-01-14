@@ -1,9 +1,10 @@
 const express = require('express');
+const methodOverride = require('method-override');
 const morgan = require('morgan');
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
+
 const app = express();
 const PORT = 8080; //default port 8080
 app.set('view engine', 'ejs'); //use EJS as templating engine
@@ -11,6 +12,7 @@ app.set('view engine', 'ejs'); //use EJS as templating engine
 //==================
 //MIDWARE
 //==================
+app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true })); //instead of receiving data as query form, receive data as an object -> req.body
 app.use(morgan("dev"));
 // app.use(cookieParser());
@@ -248,7 +250,7 @@ app.get('/urls/:id', (req, res) => {
 /**
  * Edit a URL - handle form submission
  */
-app.post('/urls/:id', (req, res) => {
+app.put('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   //if URL doesn't exist in database return html error message (accessed via cURL command)
   if (!urlDatabase[shortURL]) {
@@ -274,7 +276,7 @@ app.post('/urls/:id', (req, res) => {
 /**
  * Delete a URL
  */
-app.post('/urls/:id/delete', (req, res) => {
+app.delete('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   //Check if shortURL doesn't exist before updating
   if (!urlDatabase[shortURL]) {
