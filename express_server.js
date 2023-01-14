@@ -134,13 +134,6 @@ app.get('/urls.json', (req, res) => {
 });
 
 /**
- * Get /hello page
- */
-app.get('/hello', (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>");
-});
-
-/**
  * Get Register page
  */
 app.get('/register', (req, res) => {
